@@ -3,10 +3,11 @@ import errno #Handle for nonblocking recv
 import sys
 import time
 import pickle
+import tkinter
 
 #Find a way to timeout the input from the options loop
 HEADER = 512
-serverName = "127.0.0.1"
+serverName = "192.168.1.47"
 serverPort = 12000
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
@@ -50,7 +51,9 @@ while(check == "CHANGE"):
     else: #Retry entering another name
         continue
 
-#Loop the options until the client enteres (3) or "Exit"
+
+# Loop the options until the client enteres (3) or "Exit"
+
 while True:
     print("(1) List")
     print("(2) Chat")
