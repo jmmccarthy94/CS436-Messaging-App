@@ -13,7 +13,7 @@ class guiHandler(tk.Frame):
         self.master = master
         self.msgQ = msgQ
 
-        self.master.title("Massaging App")
+        self.master.title("Messaging App")
         self.master.resizable(False, False)
         self.master.tk_setPalette(background='#e6e6e6')
 
