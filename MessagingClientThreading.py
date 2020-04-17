@@ -134,7 +134,7 @@ class messagingClient(tk.Frame):
 
         #Find a way to timeout the input from the options loop
         self.HEADER = 512
-        serverName = "192.168.1.47"
+        serverName = "127.0.0.1"
         serverPort = 12000
         self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clientSocket.connect((serverName, serverPort))
