@@ -7,8 +7,8 @@ import tkinter
 
 #Find a way to timeout the input from the options loop
 HEADER = 512
-serverName = "127.0.0.1"
-serverPort = 12000
+serverName = "72.197.48.32"
+serverPort = 1234
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
 check = "CHANGE"
