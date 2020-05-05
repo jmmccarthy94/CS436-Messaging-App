@@ -219,7 +219,7 @@ class ChatPage(tk.Frame):
         #my_msg = tk.StringVar()
 
         scrollbar = tk.Scrollbar(chat_frame)
-        self.chat_list = tk.Listbox(chat_frame, height=20, width=60, yscrollcommand=scrollbar.set, bg="white")
+        self.chat_list = tk.Text(chat_frame, height=20, width=60, yscrollcommand=scrollbar.set, bg="white")
         scrollbar.pack(side="right", fill="y")
         self.chat_list.pack(side="left", fill="both")
         chat_frame.pack()
@@ -239,16 +239,28 @@ class ChatPage(tk.Frame):
         while True:
             try:
                 msg = self.controller.client_socket.recv(self.controller.BUFSIZ).decode("utf8")
+                if msg == "CREATION_OK":
+                    msg = "*** Your room has been created ***\n"
+                elif msg == "JOIN_OK":
+                    msg = "NEW_JOIN"
+                    self.send(notif=msg)
+                    continue
                 self.chat_list.insert(tk.END, msg)
+                self.chat_list.see(tk.END)
             except OSError:  # Possibly client has left the chat.
                 print("something went wrong")
                 break
 
-    def send(self, event=None):
-        print("hi")
-        msg = self.entry_field.get("1.0", tk.END)
-        self.entry_field.delete("0.0", tk.END)
+    def send(self, event=None, notif=None):
+        if notif == None:
+            msg = self.entry_field.get("1.0", tk.END)
+            print("Sent message:", msg, end=" ")
+            self.entry_field.delete("1.0", tk.END)
+            self.entry_field.mark_set("insert", "%d.%d" % (0,0))
+        else:
+            msg = notif
         self.controller.client_socket.send(bytes(msg, "utf8"))
+        return 'break'
 
 if __name__ == "__main__":
     app = App()

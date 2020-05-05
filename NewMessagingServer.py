@@ -69,7 +69,8 @@ def room_selection_handler(client):
                 print("Error joining room %s by client %s" % room, client)
                 client.send(bytes("JOIN_BAD", "utf8"))
         elif msg[0:9] == "CREATE_O:":
-            room = msg[9:]
+            #room = msg[9:]
+            room = usernames[client] + "'s Room"
             print("Creating new room: %s" % room)
             rooms[room].append(client)
             # FIXME Handle for duplicate room names
@@ -115,15 +116,20 @@ def client_in_room(room, client):
             check_room(room)
             room_selection_handler(client)
             return
+        elif msg == "NEW_JOIN":
+            broadcast_to_room(room, f"*** {usernames[client]} has joined the room! ***\n", join=True)
         else:
             broadcast_to_room(room, msg ,usernames[client])
 
 
-def broadcast_to_room(room, msg, sender=""):
+def broadcast_to_room(room, msg, sender="", join=False):
     '''Send message to all clients in a room'''
     for sock in rooms[room]:
         print(sock)
-        sock.send(bytes(sender + ">> ", "utf8") + bytes(msg, "utf8"))
+        if join:
+            sock.send(bytes(msg, "utf8"))
+        else:
+            sock.send(bytes(sender + ">> ", "utf8") + bytes(msg, "utf8"))
 
 
 def list_rooms(client):
