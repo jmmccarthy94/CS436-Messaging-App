@@ -71,8 +71,11 @@ class App(tk.Tk):
             self.terminate()
 
     def terminate(self):
-        print("delete")
-        self.client_socket.send(bytes("QUIT_APP", "utf8"))
+        print("Ending Application")
+        try:
+            self.client_socket.send(bytes("QUIT_APP", "utf8"))
+        except:
+            print("failed to tell server")
         self.destroy()
 
 
@@ -249,6 +252,10 @@ class ChatPage(tk.Frame):
                 self.chat_list.see(tk.END)
             except OSError:  # Possibly client has left the chat.
                 print("something went wrong")
+                self.chat_list.insert(tk.END, "Server has crashed, closing application")
+                self.chat_list.see(tk.END)
+                time.sleep(3)
+                self.controller.terminate()
                 break
 
     def send(self, event=None, notif=None):
