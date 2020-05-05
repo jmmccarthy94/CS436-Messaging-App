@@ -7,8 +7,8 @@ import tkinter
 
 #Find a way to timeout the input from the options loop
 HEADER = 512
-serverName = "193.161.193.99"
-serverPort = 1194
+serverName = "proxy18.rt3.io"
+serverPort = 38608
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
 check = "CHANGE"
@@ -19,11 +19,11 @@ clientSocket.setblocking(False)# Make the socket non blocking to receive message
 #          "Quit", then the chatroom wil exit.
 def clientChatroom():
     while True:
-        time.sleep(0.2)
+        time.sleep(0.6)
         try:
             clientSocket.settimeout(3.0)
             anyMsg = clientSocket.recv(HEADER).decode() #Try to receive a message
-            clientSocket.settimeout(None)
+            clientSocket.settimeout(3.0)
             print(anyMsg)
         except:
             pass
@@ -62,15 +62,16 @@ while True:
 
     try:
         # # If message is not empty, send it to the server
-        if not message.isspace():
+        if not message.isspace(): 
             clientSocket.sendall(message.encode())
+            time.sleep(1)
 
         #If the client types 1, send it to the server and receive the list of clients in the server
         if message == "1" or message == "List users":
             print("Here is a list of all users connected to the server: ")
             time.sleep(0.5)
             serverSend = clientSocket.recv(HEADER)
-            time.sleep(0.2)
+            time.sleep(0.8)
             serverList = pickle.loads(serverSend)
             for user, avail in serverList.items(): #Get only available names in the list
                 if username != user:
@@ -106,7 +107,7 @@ while True:
         #Receive messages from the server. If at any point the client receives a chat invitation from someone,
         #respond accordingly.
         while True:
-            time.sleep(0.5)
+            time.sleep(1.5)
             try:
                 anyMsg = clientSocket.recv(HEADER).decode() #From server elif 2
                 #If at any point another client wishes to invite to chat, handle for it

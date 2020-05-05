@@ -4,8 +4,8 @@ import pickle #Send list over a connection socket
 import time
 
 HEADER = 512
-serverName = "10.9.59.14"
-serverPort = 32249
+serverName = "127.0.0.1"
+serverPort = 1234
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 serverSocket.bind((serverName, serverPort))
