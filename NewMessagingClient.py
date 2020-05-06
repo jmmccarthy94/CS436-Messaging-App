@@ -1,11 +1,15 @@
 import socket
-import errno #Handle for nonblocking recv
-import sys
+#import errno #Handle for nonblocking recv
+#import sys
 import time
 import pickle
-import queue
+#import queue
+import getpass
 import tkinter as tk
 from threading import Thread
+from tkinter import filedialog
+#from PIL import Image, ImageTk
+
 
 class App(tk.Tk):
 
@@ -71,8 +75,11 @@ class App(tk.Tk):
             self.terminate()
 
     def terminate(self):
-        print("delete")
-        self.client_socket.send(bytes("QUIT_APP", "utf8"))
+        print("Ending Application")
+        try:
+            self.client_socket.send(bytes("QUIT_APP", "utf8"))
+        except:
+            print("failed to tell server")
         self.destroy()
 
 
@@ -215,21 +222,66 @@ class ChatPage(tk.Frame):
         self.recieve_thread = None
         
         chat_frame = tk.Frame(self, width=100, height=50, pady=10, padx=20)
+        enter_frame = tk.Frame(self, width=100, height=50, pady=0, padx=10)
+        self.emoji_frame = tk.Frame(self, width=100, height=50, pady=0, padx=10)
 
-        #my_msg = tk.StringVar()
+        #self.photo = tk.PhotoImage(self)
 
         scrollbar = tk.Scrollbar(chat_frame)
         self.chat_list = tk.Text(chat_frame, height=20, width=60, yscrollcommand=scrollbar.set, bg="white")
+        self.chat_list.config(state=tk.DISABLED)
         scrollbar.pack(side="right", fill="y")
         self.chat_list.pack(side="left", fill="both")
         chat_frame.pack()
 
         #entry_field = tk.Entry(self, textvariable=my_msg, bg="white")
-        self.entry_field = tk.Text(self, bg="white", height=2, width = 40)
+        self.entry_field = tk.Text(enter_frame, bg="white", height=3, width = 40)
         self.entry_field.bind("<Return>", self.send)
-        self.entry_field.pack()
-        send_button = tk.Button(self, text="Send", command=self.send)
-        send_button.pack()
+        self.entry_field.pack(side="left", pady=5, padx=(0,10), fill="both")
+        send_button = tk.Button(enter_frame, text="Send Image", command=self.send_image)
+        send_button.pack(side="right", pady=5, padx=(0,5))
+        send_button = tk.Button(enter_frame, text="Emoji", command=self.display_emoji)
+        send_button.pack(side="right", pady=5, padx=(0,5))
+        send_button = tk.Button(enter_frame, text="Send", command=self.send)
+        send_button.pack(side="right", pady=5, padx=(0,5))
+        
+        
+        enter_frame.pack()
+
+        self.show_emoji = False
+        tk.Button(self.emoji_frame, text="\U0001F600", command=lambda: self.emoji("\U0001F600")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F601", command=lambda: self.emoji("\U0001F601")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F606", command=lambda: self.emoji("\U0001F606")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F605", command=lambda: self.emoji("\U0001F605")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F923", command=lambda: self.emoji("\U0001F923")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F602", command=lambda: self.emoji("\U0001F602")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F642", command=lambda: self.emoji("\U0001F642")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F643", command=lambda: self.emoji("\U0001F643")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F609", command=lambda: self.emoji("\U0001F609")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F60A", command=lambda: self.emoji("\U0001F60A")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F60D", command=lambda: self.emoji("\U0001F60D")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F618", command=lambda: self.emoji("\U0001F618")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F60B", command=lambda: self.emoji("\U0001F60B")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F61C", command=lambda: self.emoji("\U0001F61C")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F611", command=lambda: self.emoji("\U0001F611")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F636", command=lambda: self.emoji("\U0001F636")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F928", command=lambda: self.emoji("\U0001F928")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F62C", command=lambda: self.emoji("\U0001F62C")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F62A", command=lambda: self.emoji("\U0001F62A")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F922", command=lambda: self.emoji("\U0001F922")).pack(side="right")
+        tk.Button(self.emoji_frame, text="\U0001F635", command=lambda: self.emoji("\U0001F635")).pack(side="right")
+
+    def display_emoji(self):
+        if not self.show_emoji:
+            self.emoji_frame.pack(pady=3)
+            self.show_emoji = True
+        else:
+            self.emoji_frame.pack_forget()
+            self.show_emoji = False
+
+    def emoji(self, face):
+        self.entry_field.insert(tk.END, face)
+        self.entry_field.see(tk.END)
 
     def init_room(self):
         self.recieve_thread = Thread(target=self.recieve)
@@ -239,28 +291,87 @@ class ChatPage(tk.Frame):
         while True:
             try:
                 msg = self.controller.client_socket.recv(self.controller.BUFSIZ).decode("utf8")
+
                 if msg == "CREATION_OK":
                     msg = "*** Your room has been created ***\n"
                 elif msg == "JOIN_OK":
                     msg = "NEW_JOIN"
                     self.send(notif=msg)
                     continue
+                '''
+                elif msg == "IMAGE_SENT":
+                    msg = self.controller.client_socket.recv(self.controller.BUFSIZ)#.decode("utf8")
+                    msg = open(msg, 'wb')
+
+                    photo = tk.PhotoImage(image=msg)
+                    labelphoto = tk.Label(self, image=photo)
+                    labelphoto.image = photo
+                    self.chat_list.window_create(tk.END, window=labelphoto)
+                    self.chat_list.insert(tk.END, ' \n')
+                    self.chat_list.see(tk.END)
+                    self.chat_list.config(state=tk.DISABLED)
+                    msg.close()
+                    continue
+                '''
+
+                self.chat_list.config(state=tk.NORMAL)
                 self.chat_list.insert(tk.END, msg)
+                self.chat_list.config(state=tk.DISABLED)
                 self.chat_list.see(tk.END)
             except OSError:  # Possibly client has left the chat.
                 print("something went wrong")
+                self.chat_list.config(state=tk.NORMAL)
+                self.chat_list.insert(tk.END, "Server has crashed, closing application")
+                self.chat_list.config(state=tk.DISABLED)
+                self.chat_list.see(tk.END)
+                time.sleep(3)
+                self.controller.terminate()
                 break
 
     def send(self, event=None, notif=None):
         if notif == None:
             msg = self.entry_field.get("1.0", tk.END)
-            print("Sent message:", msg, end=" ")
             self.entry_field.delete("1.0", tk.END)
             self.entry_field.mark_set("insert", "%d.%d" % (0,0))
         else:
             msg = notif
-        self.controller.client_socket.send(bytes(msg, "utf8"))
+        if msg.strip() != "":
+            print("Sent message:", msg, end=" ")
+            self.controller.client_socket.send(bytes(msg, "utf8"))
         return 'break'
+
+    def send_image(self):
+        self.chat_list.config(state=tk.NORMAL)
+        user = getpass.getuser()
+        image_path = tk.filedialog.askopenfilename(initialdir='C:/Users/%s' % user)
+
+        '''
+        picture = open(image_path, 'rb')
+        print(picture)
+        self.controller.client_socket.send(bytes("IMAGE_SENT", "utf8"))
+        self.controller.client_socket.send(picture)
+        picture.clost()
+        '''
+        #image = Image.open(image_path)
+        #print(image_path)
+        #photo = tk.PhotoImage(self, file='Tiny6pixel.png')
+        #self.photo = ImageTk.PhotoImage(image_path)
+        #self.chat_list.image_create(tk.END, image=photo)
+        #self.chat_list.image = photo
+
+        #self.photo = ImageTk.PhotoImage(image_path)
+        #self.chat_list.image_create(tk.END, image=photo)
+
+        photo = tk.PhotoImage(file=image_path)
+        labelphoto = tk.Label(self, image=photo)
+        labelphoto.image = photo
+        self.chat_list.window_create(tk.END, window=labelphoto)
+        self.chat_list.insert(tk.END, ' \n')
+        self.chat_list.see(tk.END)
+        self.chat_list.config(state=tk.DISABLED)
+        #labelphoto.pack()
+        
+        
 
 if __name__ == "__main__":
     app = App()
