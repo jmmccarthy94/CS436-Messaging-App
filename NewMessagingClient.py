@@ -223,7 +223,7 @@ class ChatPage(tk.Frame):
         
         chat_frame = tk.Frame(self, width=100, height=50, pady=10, padx=20)
         enter_frame = tk.Frame(self, width=100, height=50, pady=0, padx=10)
-        self.emoji_frame = tk.Frame(self, width=100, height=50, pady=0, padx=10)
+        #self.emoji_frame = tk.Frame(self, width=100, height=50, pady=0, padx=10)
 
         #self.photo = tk.PhotoImage(self)
 
@@ -240,14 +240,15 @@ class ChatPage(tk.Frame):
         self.entry_field.pack(side="left", pady=5, padx=(0,10), fill="both")
         send_button = tk.Button(enter_frame, text="Send Image", command=self.send_image)
         send_button.pack(side="right", pady=5, padx=(0,5))
-        send_button = tk.Button(enter_frame, text="Emoji", command=self.display_emoji)
-        send_button.pack(side="right", pady=5, padx=(0,5))
+        #send_button = tk.Button(enter_frame, text="Emoji", command=self.display_emoji)
+        #send_button.pack(side="right", pady=5, padx=(0,5))
         send_button = tk.Button(enter_frame, text="Send", command=self.send)
         send_button.pack(side="right", pady=5, padx=(0,5))
         
         
         enter_frame.pack()
 
+        '''
         self.show_emoji = False
         tk.Button(self.emoji_frame, text="\U0001F600", command=lambda: self.emoji("\U0001F600")).pack(side="right")
         tk.Button(self.emoji_frame, text="\U0001F601", command=lambda: self.emoji("\U0001F601")).pack(side="right")
@@ -282,6 +283,7 @@ class ChatPage(tk.Frame):
     def emoji(self, face):
         self.entry_field.insert(tk.END, face)
         self.entry_field.see(tk.END)
+    '''
 
     def init_room(self):
         self.recieve_thread = Thread(target=self.recieve)
