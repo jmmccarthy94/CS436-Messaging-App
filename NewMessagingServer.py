@@ -158,8 +158,8 @@ room_pass = {}
 #rooms["test2"] = "alsotest"
 
 BUFSIZ = 1024
-SERVER_IP = "192.168.1.47"
-SERVER_PORT = 12000
+SERVER_IP = "0.0.0.0"
+SERVER_PORT = 1234
 ADDR = (SERVER_IP, SERVER_PORT)
 
 SERVER = socket(AF_INET, SOCK_STREAM)

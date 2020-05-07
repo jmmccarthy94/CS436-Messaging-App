@@ -19,8 +19,8 @@ class App(tk.Tk):
         self.protocol("WM_DELETE_WINDOW", self.terminate)
 
         self.BUFSIZ = 1024
-        HOST = "192.168.1.47"
-        PORT = 12000
+        HOST = "proxy17.rt3.io"
+        PORT = 32158
         ADDR = (HOST, PORT)
         self.username = ""
         self.rooms = []
