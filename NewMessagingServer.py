@@ -5,6 +5,14 @@ from socket import AF_INET, socket, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 from threading import Thread
 from collections import defaultdict
 
+'''imports for video calling
+import sys
+import cv2
+import numpy as np
+import struct 
+import zlib
+'''
+
 
 def new_connection_handler():
     '''Accept new clients to the server'''
