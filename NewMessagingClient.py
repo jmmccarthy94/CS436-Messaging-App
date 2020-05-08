@@ -10,6 +10,13 @@ from threading import Thread
 from tkinter import filedialog
 #from PIL import Image, ImageTk
 
+'''imports for video 
+import sys
+import cv2
+import numpy as np
+import struct 
+import zlib
+'''
 
 class App(tk.Tk):
 
@@ -235,6 +242,10 @@ class ChatPage(tk.Frame):
         chat_frame.pack()
 
         #entry_field = tk.Entry(self, textvariable=my_msg, bg="white")
+        '''video calling button
+        send_button = tk.Button(enter_frame, text="video", command=self.send_video)
+        send_button.pack(side="right", pady=5, padx=(0,5))
+        '''
         self.entry_field = tk.Text(enter_frame, bg="white", height=3, width = 40)
         self.entry_field.bind("<Return>", self.send)
         self.entry_field.pack(side="left", pady=5, padx=(0,10), fill="both")
@@ -372,6 +383,55 @@ class ChatPage(tk.Frame):
         self.chat_list.see(tk.END)
         self.chat_list.config(state=tk.DISABLED)
         #labelphoto.pack()
+        
+'''video calling functions
+    def send_video(self):
+        cam = cv.VideoCapture(0)
+        encode_paramameter = [int(cv.IMWRITE_JPEG_QUALITY), 90]
+        cam.set(4, 420);
+        while True:
+            try:
+                ret, frame = cam.read()
+                result, frame = cv.imencode('.jpg', frame, encode_paramameter)
+                data = pickle.dumps(frame, 0)
+                size = len(data)
+
+                self.controller.client_socket.sendall(struct.pack(">L", size) + data)
+
+                self.recieveVideo()
+            except OSError:  # Possibly client has left the chat.
+                print("error in send_video")
+        
+        
+        cam.release()
+
+    def recieveVideo(self):
+        while True:
+            try:
+                size = b""
+                payload_size = struct.calcsize(">L")
+    
+                while len(size) < payload_size:
+                    size += self.controller.client_socket.recv(4096)
+
+    
+                packed_msg_size = size[:payload_size]
+                size = size[payload_size:]
+                msg_size = struct.unpack(">L", packed_msg_size)[0]
+    
+                while len(size) < msg_size:
+                    size += self.controller.client_socket.recv(4096)
+            
+                frame_size = size[:msg_size]
+                size= size[msg_size:]
+
+                frame=pickle.loads(frame_size, fix_imports=True, encoding="bytes").decode("utf8")
+                frame = cv.imdecode(frame, cv.IMREAD_COLOR)
+                cv.imshow('test',frame)
+                cv.waitKey(1)
+            except OSError:  # Possibly client has left the chat.
+                print("error in recieving video")
+    '''
         
         
 
